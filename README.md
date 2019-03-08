@@ -2,6 +2,11 @@
 Rust SDK for Google Cloud
 
 ## High-level overview
+#### docs
+This directory contains admin documention
+on the project.  We can also use it as a
+place to store customer facing docs about
+design/usage/etc.
 
 #### googleapis
 
