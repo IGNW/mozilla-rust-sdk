@@ -2,22 +2,22 @@ use yup_oauth2::{self as oauth, GetToken, ServiceAccountAccess};
 
 const KEY_PATH_ENV_VAR: &'static str = "GOOGLE_APPLICATION_CREDENTIALS";
 
-pub struct TokenGenerator<C> {
-    inner: ServiceAccountAccess<C>,
+pub struct TokenGenerator {
+    inner: ServiceAccountAccess<hyper::Client>,
     scopes: Vec<&'static str>,
 }
 
-impl<C> std::ops::Deref for TokenGenerator<C> {
-    type Target = ServiceAccountAccess<C>;
+impl std::ops::Deref for TokenGenerator {
+    type Target = ServiceAccountAccess<hyper::Client>;
 
-    fn deref(&self) -> &ServiceAccountAccess<C> {
+    fn deref(&self) -> &ServiceAccountAccess<hyper::Client> {
         &self.inner
     }
 }
 
-impl<C> Iterator for TokenGenerator<C>
+impl Iterator for TokenGenerator
 where
-    ServiceAccountAccess<C>: GetToken,
+    ServiceAccountAccess<hyper::Client>: GetToken,
 {
     type Item = oauth::Token;
 
@@ -26,18 +26,18 @@ where
     }
 }
 
-impl<C> TokenGenerator<C>
+impl TokenGenerator
 where
-    ServiceAccountAccess<C>: GetToken,
+    ServiceAccountAccess<hyper::Client>: GetToken,
 {
     pub fn from_service_account_access(
-        inner: ServiceAccountAccess<C>,
+        inner: ServiceAccountAccess<hyper::Client>,
         scopes: Vec<&'static str>,
-    ) -> TokenGenerator<C> {
+    ) -> TokenGenerator {
         TokenGenerator { inner, scopes }
     }
 
-    pub fn new(scopes: Vec<&'static str>) -> TokenGenerator<hyper::Client> {
+    pub fn new(scopes: Vec<&'static str>) -> TokenGenerator {
         let creds_file_path = match std::env::var(KEY_PATH_ENV_VAR) {
             Ok(val) => val,
             Err(_) => panic!(
