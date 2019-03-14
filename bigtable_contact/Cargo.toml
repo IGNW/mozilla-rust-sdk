@@ -1,0 +1,23 @@
+[package]
+name = "bigtable_contact"
+description = "Attempts at using generated code and service account auth with tower to communicate with BigTable"
+version = "0.1.0"
+authors = ["Tyler Neely <t@jujit.su>"]
+edition = "2018"
+
+[dependencies]
+service_account_auth = { path = "../service_account_auth" }
+pbgen = { path = "../pbgen" }
+http = "0.1.16"
+tower = { git = "https://github.com/tower-rs/tower" }
+tower-h2 = { git = "https://github.com/tower-rs/tower-h2" }
+tower-grpc = { git = "https://github.com/tower-rs/tower-grpc" }
+tower-util = { git = "https://github.com/tower-rs/tower" }
+tower-service = { git = "https://github.com/tower-rs/tower" }
+tokio-core = "0.1.17"
+tokio = "0.1"
+tokio-tls = "0.2"
+native-tls = "0.2"
+tokio-rustls = "0.9.0"
+futures = "0.1.25"
+h2 = "0.1.16"
