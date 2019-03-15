@@ -1,6 +1,9 @@
-use yup_oauth2::{self as oauth, GetToken, ServiceAccountAccess};
+use yup_oauth2::{
+    self as oauth, GetToken, ServiceAccountAccess,
+};
 
-const KEY_PATH_ENV_VAR: &'static str = "GOOGLE_APPLICATION_CREDENTIALS";
+const KEY_PATH_ENV_VAR: &'static str =
+    "GOOGLE_APPLICATION_CREDENTIALS";
 
 pub struct TokenGenerator {
     inner: ServiceAccountAccess<hyper::Client>,
@@ -10,7 +13,9 @@ pub struct TokenGenerator {
 impl std::ops::Deref for TokenGenerator {
     type Target = ServiceAccountAccess<hyper::Client>;
 
-    fn deref(&self) -> &ServiceAccountAccess<hyper::Client> {
+    fn deref(
+        &self,
+    ) -> &ServiceAccountAccess<hyper::Client> {
         &self.inner
     }
 }
@@ -37,7 +42,9 @@ where
         TokenGenerator { inner, scopes }
     }
 
-    pub fn new(scopes: Vec<&'static str>) -> TokenGenerator {
+    pub fn new(
+        scopes: Vec<&'static str>,
+    ) -> TokenGenerator {
         let creds_file_path = match std::env::var(KEY_PATH_ENV_VAR) {
             Ok(val) => val,
             Err(_) => panic!(
@@ -46,13 +53,22 @@ where
             ),
         };
 
-        let client_secret = oauth::service_account_key_from_file(&creds_file_path)
+        let client_secret =
+            oauth::service_account_key_from_file(
+                &creds_file_path,
+            )
             .expect("could not parse creds file");
-        let client = hyper::Client::with_connector(hyper::net::HttpsConnector::new(
-            hyper_native_tls::NativeTlsClient::new().unwrap(),
-        ));
+        let client = hyper::Client::with_connector(
+            hyper::net::HttpsConnector::new(
+                hyper_native_tls::NativeTlsClient::new()
+                    .unwrap(),
+            ),
+        );
         TokenGenerator {
-            inner: ServiceAccountAccess::new(client_secret, client),
+            inner: ServiceAccountAccess::new(
+                client_secret,
+                client,
+            ),
             scopes: scopes,
         }
     }
