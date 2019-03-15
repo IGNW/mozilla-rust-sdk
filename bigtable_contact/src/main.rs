@@ -5,17 +5,33 @@ use native_tls::TlsConnector as NativeTlsConnector;
 use tokio::executor::DefaultExecutor;
 use tokio::net::tcp::TcpStream;
 use tokio_tls::TlsConnector;
-use tower_grpc::{metadata::MetadataValue, Request};
+use tower_grpc::{
+    metadata::{MetadataKey, MetadataValue},
+    Request,
+};
 use tower_h2::client;
 use tower_service::Service;
 use tower_util::MakeService;
 
 use pbgen::google::bigtable::v2::{
-    client::Bigtable, ReadRowsRequest,
+    client::Bigtable, SampleRowKeysRequest,
 };
 use service_account_auth::TokenGenerator;
 
-const BIGTABLE_ADDR: &'static str = "googleapis.com:50051";
+use structopt::StructOpt;
+
+#[derive(Debug, StructOpt)]
+struct Opt {
+    /// Instance name
+    #[structopt(short = "i", long = "instance")]
+    instance: String,
+
+    /// Project name
+    #[structopt(short = "p", long = "project")]
+    project: String,
+}
+
+const BIGTABLE_ADDR: &'static str = "googleapis.com:443";
 const BIGTABLE_DOMAIN: &'static str = "googleapis.com";
 
 pub mod scopes {
@@ -40,22 +56,51 @@ pub mod scopes {
 }
 
 pub struct BigtableClient<T> {
+    project: String,
+    instance: String,
     inner: Bigtable<T>,
     token_gen: TokenGenerator,
 }
 
 impl<T> BigtableClient<T> {
-    fn add_bearer<R>(&mut self, request: R) -> Request<R> {
+    fn full_table_name(&self, table: &str) -> String {
+        format!(
+            "projects/{}/instances/{}/tables/{}",
+            self.project, self.instance, table
+        )
+    }
+
+    fn add_bearer<R: std::fmt::Debug>(
+        &mut self,
+        request: R,
+    ) -> Request<R> {
+        /*
+        let mut request = http::Request::new(request);
+        *request.uri_mut() = scopes::ADMIN.parse().unwrap();
+
+        let mut request = Request::from_http(request);
+        */
+
         let mut request = Request::new(request);
 
         let token: String =
             self.token_gen.token().access_token;
 
+        let mut header = String::from("Bearer ");
+        header.push_str(&token);
+
         request.metadata_mut().insert(
-            "Bearer",
-            MetadataValue::try_from_bytes(token.as_bytes())
-                .unwrap(),
+            MetadataKey::from_bytes(
+                "Authorization".as_bytes(),
+            )
+            .unwrap(),
+            MetadataValue::try_from_bytes(
+                header.as_bytes(),
+            )
+            .unwrap(),
         );
+
+        println!("request: {:?}", request);
 
         request
     }
@@ -70,6 +115,8 @@ impl<T> std::ops::Deref for BigtableClient<T> {
 }
 
 fn main() {
+    let opt = Opt::from_args();
+
     let token_gen =
         TokenGenerator::new(vec![scopes::ADMIN]);
 
@@ -81,23 +128,47 @@ fn main() {
         DefaultExecutor::current(),
     );
 
+    let google_uri: http::Uri =
+        "https://googleapis.com".parse().unwrap();
+
     let client = make_client
         .make_service((BIGTABLE_ADDR, BIGTABLE_DOMAIN))
-        .map(|s| BigtableClient {
-            inner: Bigtable::new(s),
-            token_gen,
+        .map(|s| {
+            println!("creating client");
+            let mut with_origin: tower_add_origin::Builder =
+                tower_add_origin::Builder::new();
+
+            with_origin.uri(google_uri);
+
+            let with_origin = with_origin.build(s).unwrap();
+
+            BigtableClient {
+                project: opt.project.into(),
+                instance: opt.instance.into(),
+                inner: Bigtable::new(with_origin),
+                token_gen,
+            }
         });
 
     let read_rows = client
         .and_then(|mut client| {
-            let request = ReadRowsRequest {
-                table_name: "my_table".to_string(),
+            println!("sending request to client");
+            let table =
+                client.full_table_name("Hello-Bigtable");
+
+            let request = SampleRowKeysRequest {
+                table_name: table,
                 ..Default::default()
             };
             let request = client.add_bearer(request);
-            client.inner.read_rows(request).map_err(|e| {
-                panic!("gRPC request failed; err={:?}", e)
-            })
+            client.inner.sample_row_keys(request).map_err(
+                |e| {
+                    panic!(
+                        "gRPC request failed; err={:?}",
+                        e
+                    )
+                },
+            )
         })
         .and_then(|response| {
             println!("RESPONSE = {:?}", response);
@@ -150,6 +221,8 @@ impl Service<(&'static str, &'static str)> for Tls {
     ) -> Self::Future {
         let addr =
             addr.to_socket_addrs().unwrap().next().unwrap();
+
+        println!("got addr: {:?}", addr);
 
         let tcp_connection = TcpStream::connect(&addr)
             .map_err(|e: std::io::Error| {
