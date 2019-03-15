@@ -74,13 +74,6 @@ impl<T> BigtableClient<T> {
         &mut self,
         request: R,
     ) -> Request<R> {
-        /*
-        let mut request = http::Request::new(request);
-        *request.uri_mut() = scopes::ADMIN.parse().unwrap();
-
-        let mut request = Request::from_http(request);
-        */
-
         let mut request = Request::new(request);
 
         let token: String =
