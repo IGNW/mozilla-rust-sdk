@@ -37,6 +37,7 @@ bigtable/v1
 bigtable/v2
 iam/v1
 longrunning
+cloud/language/v1
 pubsub/v1
 pubsub/v1beta2
 rpc

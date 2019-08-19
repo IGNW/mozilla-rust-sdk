@@ -8,3 +8,5 @@ pub mod empty;
 pub(crate) mod iam;
 pub mod longrunning;
 pub(crate) mod rpc;
+
+pub mod cloud;
