@@ -2,7 +2,7 @@ use std::error::Error;
 use std::sync::Arc;
 
 use futures::prelude::*;
-use googleapis_raw::spanner::v1::{
+use gcp_grpc_raw::spanner::v1::{
     spanner::{CreateSessionRequest, ExecuteSqlRequest},
     spanner_grpc::SpannerClient,
 };
@@ -31,7 +31,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     req.database = database.to_string();
     let mut meta = MetadataBuilder::new();
     meta.add_str("google-cloud-resource-prefix", database)?;
-    meta.add_str("x-goog-api-client", "googleapis-rs")?;
+    meta.add_str("x-goog-api-client", "gcp-grpc-rs")?;
     let opt = CallOption::default().headers(meta.build());
     let session = client.create_session_opt(&req, opt)?;
 

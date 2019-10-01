@@ -1,4 +1,4 @@
-# googleapis-raw
+# gcp-grpc-raw
 
 These are raw bindings for Google APIs based on [`grpcio`](https://github.com/pingcap/grpc-rs).
 

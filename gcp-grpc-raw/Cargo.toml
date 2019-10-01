@@ -1,5 +1,5 @@
 [package]
-name = "googleapis-raw"
+name = "gcp-grpc-raw"
 version = "0.0.1"
 authors = ["Ferrous Systems"]
 edition = "2018"

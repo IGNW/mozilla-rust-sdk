@@ -1,11 +1,11 @@
-use googleapis_raw::empty::Empty;
-use googleapis_raw::longrunning::operations::GetOperationRequest;
-use googleapis_raw::longrunning::operations_grpc::OperationsClient;
-use googleapis_raw::spanner::admin::database::v1::{
+use gcp_grpc_raw::empty::Empty;
+use gcp_grpc_raw::longrunning::operations::GetOperationRequest;
+use gcp_grpc_raw::longrunning::operations_grpc::OperationsClient;
+use gcp_grpc_raw::spanner::admin::database::v1::{
     spanner_database_admin::CreateDatabaseRequest, spanner_database_admin::DropDatabaseRequest,
     spanner_database_admin::GetDatabaseRequest, spanner_database_admin_grpc::DatabaseAdminClient,
 };
-use googleapis_raw::spanner::v1::{
+use gcp_grpc_raw::spanner::v1::{
     mutation::Mutation, mutation::Mutation_Write, spanner::BeginTransactionRequest,
     spanner::CommitRequest, spanner::CreateSessionRequest, spanner::Session,
     spanner_grpc::SpannerClient, transaction::Transaction, transaction::TransactionOptions,
@@ -133,7 +133,7 @@ fn create_session(client: &SpannerClient, database_name: &str) -> ::grpcio::Resu
     let mut meta = MetadataBuilder::new();
     meta.add_str("google-cloud-resource-prefix", database_name)
         .expect("Failed to set meta data");
-    meta.add_str("x-goog-api-client", "googleapis-rs")
+    meta.add_str("x-goog-api-client", "gcp-grpc-rs")
         .expect("Failed to set meta data");
     let opt = CallOption::default().headers(meta.build());
     client.create_session_opt(&request, opt)
