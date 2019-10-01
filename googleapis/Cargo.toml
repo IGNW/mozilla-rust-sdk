@@ -3,6 +3,7 @@ name = "googleapis"
 version = "0.0.1"
 authors = ["Ferrous Systems"]
 edition = "2018"
+license = "Apache-2.0"
 
 [dependencies]
 futures = "0.1.28"
