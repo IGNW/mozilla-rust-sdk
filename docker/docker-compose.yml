@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ..:/googleapis-rs
+      - ..:/gcp-grpc-rs
     tty: true
     stdin_open: true
-    working_dir: /googleapis-rs
+    working_dir: /gcp-grpc-rs

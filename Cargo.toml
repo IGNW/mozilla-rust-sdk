@@ -1,5 +1,5 @@
 [workspace]
 members = [
-  "googleapis",
-  "googleapis-raw",
+  "gcp-grpc",
+  "gcp-grpc-raw",
 ]

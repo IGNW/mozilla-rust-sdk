@@ -2,7 +2,7 @@ use std::error::Error;
 use std::sync::Arc;
 
 use futures::prelude::*;
-use googleapis_raw::bigtable::v2::{bigtable::ReadRowsRequest, bigtable_grpc::BigtableClient};
+use gcp_grpc_raw::bigtable::v2::{bigtable::ReadRowsRequest, bigtable_grpc::BigtableClient};
 use grpcio::{ChannelBuilder, ChannelCredentials, EnvBuilder};
 
 fn main() -> Result<(), Box<dyn Error>> {

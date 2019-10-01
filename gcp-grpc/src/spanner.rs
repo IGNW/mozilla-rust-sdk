@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use googleapis_raw::spanner::v1::{
+use gcp_grpc_raw::spanner::v1::{
     spanner::{CreateSessionRequest, Session},
     spanner_grpc::SpannerClient,
 };
@@ -20,7 +20,7 @@ impl Client {
     /// # Examples
     ///
     /// ```no_run
-    /// use googleapis::spanner;
+    /// use gcp_grpc::spanner;
     ///
     /// let db = "projects/my_project/instances/my_instance/databases/my_database";
     /// let client = spanner::Client::new(db);
@@ -44,7 +44,7 @@ impl Client {
         req.set_database(database.to_string());
         let mut meta = MetadataBuilder::new();
         meta.add_str("google-cloud-resource-prefix", &database)?;
-        meta.add_str("x-goog-api-client", "googleapis-rs")?;
+        meta.add_str("x-goog-api-client", "gcp-grpc-rs")?;
         let opt = CallOption::default().headers(meta.build());
         let session = client.create_session_opt(&req, opt)?;
 

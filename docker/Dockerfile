@@ -27,4 +27,4 @@ ENV PATH $PATH:/usr/local/go/bin
 COPY files/credentials.json /root/credentials.json
 ENV GOOGLE_APPLICATION_CREDENTIALS /root/credentials.json
 
-WORKDIR /googleapis-rs
+WORKDIR /gcp-grpc-rs

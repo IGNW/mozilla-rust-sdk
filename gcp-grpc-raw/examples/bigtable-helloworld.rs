@@ -4,18 +4,18 @@ use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use futures::prelude::*;
-use googleapis_raw::bigtable::admin::v2::{
+use gcp_grpc_raw::bigtable::admin::v2::{
     bigtable_instance_admin::GetClusterRequest,
     bigtable_instance_admin_grpc::BigtableInstanceAdminClient,
     bigtable_table_admin::CreateTableRequest, bigtable_table_admin::DeleteTableRequest,
     bigtable_table_admin::ListTablesRequest, bigtable_table_admin_grpc::BigtableTableAdminClient,
     instance::Cluster, table::ColumnFamily, table::GcRule, table::Table,
 };
-use googleapis_raw::bigtable::v2::{
+use gcp_grpc_raw::bigtable::v2::{
     bigtable::MutateRowsRequest, bigtable::MutateRowsRequest_Entry, bigtable_grpc::BigtableClient,
     data::Mutation, data::Mutation_SetCell,
 };
-use googleapis_raw::empty::Empty;
+use gcp_grpc_raw::empty::Empty;
 use grpcio::{Channel, ChannelBuilder, ChannelCredentials, ClientUnaryReceiver, EnvBuilder};
 use protobuf::well_known_types::Duration;
 use protobuf::RepeatedField;
